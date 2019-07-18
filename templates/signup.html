@@ -1,0 +1,118 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      font-family: Helvetica;
+    }
+    header {
+      background: #434950;
+      height: 200px;
+      padding: 30px;
+    }
+    header img {
+      display: block;
+      margin: 0 auto;
+    }
+    header h1 {
+      text-align: center;
+      color: #fff;
+      font-weight: 100;
+    }
+    form {
+      background: #f5f6f7;
+      padding: 30px;
+      box-sizing: border-box;
+      max-width: 500px;
+      margin-top: -90px;
+      margin-left: auto;
+      margin-right:auto;
+    }
+    input, select {
+      -webkit-appearance: none;
+      display: inline-block;
+      padding: 11px;
+      margin: 24px 0 0 0;
+      border: 1px solid #fff;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    form span {
+      font-size: 15px;
+      color: #666;
+    }
+    input[type="submit"] {
+      background: #6aaf4e;
+      color: #fff;
+      border-radius: 5px;
+      transition: all 150ms ease-out;
+    }
+    input[type="submit"]:hover {
+      transform: scale(1.01);
+      cursor: pointer;
+    }
+    input[type="text"]:focus, select {
+      outline: none;
+    }
+    .message {
+      text-align: center;
+      color: #fff;
+    }
+    small {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+  </head>
+  <body>
+    <header>
+      <img width="100" src="//mongodb.com/assets/images/global/MongoDB_Logo_RGB_Knockout_NoReg.svg" />
+      <h1>MongoDB Enterprise Open Service Broker</h1>
+      <p>Sign up!</p>
+      <p class="message">${message || ''}</p>
+    </header>
+    <form method="POST" action="">
+      <span>To complete your subscription, please submit the form below.</span>
+      <input required type="text" name="first_name" placeholder="First Name" />
+      <input required type="text" name="last_name" placeholder="Last Name" />
+      <input required type="text" name="email" placeholder="Email" />
+      <input required type="text" name="company" placeholder="Company" />
+      <select required name="job_function">
+        <option>Job Function</option>
+        <option value="IT Executive (CIO, CTO, VP Engineering, etc.)">IT Executive (CIO, CTO, VP Engineering, etc.)</option>
+        <option value="Business Executive (CEO, COO, CMO, etc.)">Business Executive (CEO, COO, CMO, etc.)</option>
+        <option value="Architect">Architect</option>
+        <option value="Business Development / Alliance Manager">Business Development / Alliance Manager</option>
+        <option value="DBA">DBA</option>
+        <option value="Technical Operations">Technical Operations</option>
+        <option value="Director / Development Manager">Director / Development Manager</option>
+        <option value="Product / Project Manager">Product / Project Manager</option>
+        <option value="Software Developer / Engineer">Software Developer / Engineer</option>
+        <option value="Business Analyst">Business Analyst</option>
+        <option value="Data Scientist">Data Scientist</option>
+        <option value="Student">Student</option>
+        <option value="Other">Other</option>
+      </select
+      <input required type="text" name="phone" placeholder="Phone" />
+      <select required name="country">
+        <option>Country</option>
+        ${countries}
+      </select>
+      <input type="hidden" name="elqFormName" value="gcp_marketplace_integration" />
+      <input type="hidden" name="elqSiteId" value="413370795" />
+      <input type="hidden" name="elqCustomerGUID" value="0" />
+      <input type="hidden" name="elqCookieWrite" value="0" />
+      <input type="hidden" name="token" value="${token}" />
+      <input type="hidden" name="customer_id" value="${customer_id}" />
+      <input type="submit" value="Submit" />
+    </form>
+    <small>Copyright &copy; MongoDB, Inc.</small>
+  </body>
+</html>
+
