@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 from flask import jsonify, render_template
 
-
-app = Flask(__name__,template_folder='/mdb-osb-templates')
+template_folder = os.environ.get('MDB_OSB_TEMPLATE_DIR','/mdb-osb-templates')
+app = Flask(__name__,template_folder=template_folder)
 
 
 @app.route("/signup")
@@ -36,7 +36,7 @@ else:
   username = "test"
   password = "test"
 
-openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(), 
+openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(template_folder=template_folder), 
                                   api.BrokerCredentials(username,password), logger)
 
 app.register_blueprint(openbroker_bp)

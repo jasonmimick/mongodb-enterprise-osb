@@ -34,7 +34,9 @@ from openbrokerapi.response import (
 )
 
 import os
-from service_providers import service_provider, private_cloud 
+from service_providers import service_provider
+from service_providers.private_cloud import private_cloud
+from service_providers.mongodb_kubernetes import mongodb_kubernetes
 
 logger = logging.getLogger(__name__)
 
@@ -59,22 +61,23 @@ class HTTPException(Exception):
 
 class MongoDBEnterpriseOSB(ServiceBroker):
 
-    def __init__(self):
+    def __init__(self,template_folder=''):
       self.service_providers = {}
-      # TODO - re-add extensible 'services' frameowkr
-      self.service_providers['private_cloud']=private_cloud.PrivateCloudServiceProvider(logger, self)
-      #self.service_providers['kubernetes']=kubernetes.KubernetesService(logger,self)
-      #service_providers['atlas']=atlas.AtlasService(logger)
+      self.template_folder = template_folder
       self.provisioned_services = {}
       self.service_plans = {}
       self.__last_op = {}
       self.__catalog = {}
 
+      # TODO - re-add extensible 'services' frameowkr
+      pc = private_cloud.PrivateCloudServiceProvider(logger, self)
+      self.service_providers['private-cloud'] = pc
+    
+      mk = mongodb_kubernetes.MongoDBKubernetesServiceProvider(logger,self)
+      self.service_providers['mongodb-kubernetes'] = mk
+
 
     def catalog(self) -> Service:
-      # We should add the ability to inject the service plans
-      # this is where cluster admins can create the various t-shirt
-      # sizes to support for MongoDB
       
       print("loaded service providers\n".join("{}\t{}".format(k, v) for k, v in self.service_providers.items()))
       plans = []
