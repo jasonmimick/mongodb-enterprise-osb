@@ -34,7 +34,7 @@ from openbrokerapi.response import (
 )
 
 import os
-from services import service, kubernetes, atlas, devops
+from services import service_provider, private_cloud 
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +57,13 @@ class HTTPException(Exception):
         return rv
 
 
-class MongoDBOpenServiceBroker(ServiceBroker):
+class MongoDBEnterpriseOSB(ServiceBroker):
 
     def __init__(self):
       self.service_providers = {}
-      self.service_providers['devops']=devops.DevOpsService(logger, self)
-      self.service_providers['kubernetes']=kubernetes.KubernetesService(logger,self)
+      # TODO - re-add extensible 'services' frameowkr
+      self.service_providers['private_cloud']=private_cloud.PrivateCloudServiceProvider(logger, self)
+      #self.service_providers['kubernetes']=kubernetes.KubernetesService(logger,self)
       #service_providers['atlas']=atlas.AtlasService(logger)
       self.provisioned_services = {}
       self.service_plans = {}
@@ -93,7 +94,7 @@ class MongoDBOpenServiceBroker(ServiceBroker):
       catalog = Service(
             id='mongodb-open-service-broker',
             name='mongodb-open-service-broker-service',
-            description='This service creates and provides your applications access to MongoDB services.',
+            description='The MongoDB Enterprise Open Service Broker. Install, provision, bind, and manager MongoDB Enterprise Private Cloud deployments with ease.',
             bindable=True,
             plans=plans,
             tags=list(set(tags)),
@@ -150,35 +151,3 @@ class MongoDBOpenServiceBroker(ServiceBroker):
         lo = LastOperation(op, spec)
         return lo
 
-def create_broker_blueprint(credentials: api.BrokerCredentials):
-    logger.info("create_broker_blueprint: credentials: %s %s" % (credentials.username, credentials.password))
-    return api.get_blueprint(MongoDBOpenServiceBroker(), credentials, logger)
-
-app = Flask(__name__)
-
-logger = basic_config()  
-
-# If we're running inside a kubernetes cluster, then we expect the credentials for
-# the broker to be in a file mounted from a secret.
-if os.environ.get('KUBERNETES_SERVICE_HOST'):
-  k8s_host = os.environ.get('KUBERNETES_SERVICE_HOST')
-  print("Detected running in a Kubernetes cluster. KUBERNETES_SERVICE_HOST=%s" % k8s_host)
-  config_path = "/broker/broker-config"
-  with open( ("%s/username" % config_path), 'r') as secret:
-    username = secret.read()
-  with open( ("%s/password" % config_path), 'r') as secret:
-    password = secret.read()
-else:
-  print("Did not detect Kubernetes cluster. Running with default 'test/test' credentials")
-  username = "test"
-  password = "test"
-openbroker_bp = api.get_blueprint(MongoDBOpenServiceBroker(), api.BrokerCredentials(username,password), logger)
-#@openbroker_bp.app_errorhandler(HTTPException)
-#def handle_http_error(error):
-#  response = jsonify(error.to_dict())
-#  response.status_code = error.status_code
-#  print("app.errorhandler: response: %s" % response)
-#  return response
-app.register_blueprint(openbroker_bp)
-#app.register_error_handler(handle_http_error)
-app.run("0.0.0.0")

@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from openbrokerapi import api
 import os
@@ -37,9 +38,11 @@ else:
 
 openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(), 
                                   api.BrokerCredentials(username,password), logger)
+
 app.register_blueprint(openbroker_bp)
 
-
+import pprint
+pprint.pprint(app)
 if __name__ == "__main__":
     # Only for debugging while developing
     app.template_folder = '../templates'
