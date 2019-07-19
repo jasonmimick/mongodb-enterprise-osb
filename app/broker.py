@@ -34,7 +34,7 @@ from openbrokerapi.response import (
 )
 
 import os
-from services import service_provider, private_cloud 
+from service_providers import service_provider, private_cloud 
 
 logger = logging.getLogger(__name__)
 
