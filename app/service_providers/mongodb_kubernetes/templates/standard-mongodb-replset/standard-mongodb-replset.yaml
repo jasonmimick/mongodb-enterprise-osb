@@ -1,0 +1,21 @@
+#
+# standard-mongodb-replset template
+#
+---
+apiVersion: mongodb.com/v1
+kind: MongoDB
+metadata:
+  name: '{{ name }}' 
+  namespace: '{{ namespace }}' 
+  labels:
+    createdFrom: mongodb-enterprise-osb.mongodb-kubernetes
+spec:
+  type: RepicaSet
+  version: '{{ version }}'
+  members: '{{ members }}'
+  project: '{{ project }}'
+  credentials: '{{ credentials }}'
+  persistent: true
+  podSpec:
+    cpu: '{{ cpu }}'
+    memory: '{{ memory }}'

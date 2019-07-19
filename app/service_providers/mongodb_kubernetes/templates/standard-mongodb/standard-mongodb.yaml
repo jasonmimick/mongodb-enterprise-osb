@@ -1,0 +1,21 @@
+#
+# This is a minimal config. 
+#
+---
+apiVersion: mongodb.com/v1
+kind: MongoDB
+metadata:
+  name: '{{ name }}'
+  namespace: '{{ namespace }}'
+  labels:
+    createdFrom: mongodb-enterprise-osb.mongodb-kubernetes
+    description: 'A standard basic stand-alone MongoDB node.'
+spec:
+  type: Standalone
+  version: '{{ version }}'
+  project: '{{ project }}'
+  credentials: '{{ credentials }}'
+  persistent: true
+  podSpec:
+    cpu: '{{ cpu }}'
+    memory: '{{ memory }}'
