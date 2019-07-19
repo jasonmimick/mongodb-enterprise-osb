@@ -1,12 +1,22 @@
 import logging
 from flask import Flask
 from openbrokerapi import api
-import os
+import sys,os
 from broker import MongoDBEnterpriseOSB
-
-logger = logging.getLogger(__name__)
-
 from flask import jsonify, render_template
+
+logger = logging.getLogger('mdb-osb')
+log_level=os.environ.get("MDB_OSB_LOGLEVEL", "INFO")
+logger.setLevel(log_level)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(log_level)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+DEFAULT_USERNAME="test"
+DEFAULT_PWD="test"
 
 template_folder = os.environ.get('MDB_OSB_TEMPLATE_DIR','/mdb-osb-templates')
 app = Flask(__name__,template_folder=template_folder)
@@ -25,21 +35,23 @@ def hello():
 # the broker to be in a file mounted from a secret.
 if os.environ.get('KUBERNETES_SERVICE_HOST'):
   k8s_host = os.environ.get('KUBERNETES_SERVICE_HOST')
-  print("Detected running in a Kubernetes cluster. KUBERNETES_SERVICE_HOST=%s" % k8s_host)
+  logger.debug(f'Running in a Kubernetes cluster. KUBERNETES_SERVICE_HOST={k8s_host}')
   config_path = "/broker/broker-config"
   with open( ("%s/username" % config_path), 'r') as secret:
     username = secret.read()
   with open( ("%s/password" % config_path), 'r') as secret:
     password = secret.read()
 else:
-  print("Did not detect Kubernetes cluster. Running with default 'test/test' credentials")
-  username = "test"
-  password = "test"
+  logger.debug("Did not detect Kubernetes cluster")
+  logger.debug(f'Running with default {DEFAULT_USERNAME}:{DEFAULT_PWD} credentials')
+  username = DEFAULT_USERNAME
+  password = DEFAULT_PWD
 
-openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(template_folder=template_folder), 
-                                  api.BrokerCredentials(username,password), logger)
+#openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(template_folder=template_folder,
+#                                                       logger=logger), 
+#                                  api.BrokerCredentials(username,password), logger)
 
-app.register_blueprint(openbroker_bp)
+#app.register_blueprint(openbroker_bp)
 
 import pprint
 pprint.pprint(app)

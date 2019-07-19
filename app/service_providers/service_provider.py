@@ -25,9 +25,9 @@ from openbrokerapi.catalog import (
 # interface for services
 class MDBOSBServiceProvider(object, metaclass=abc.ABCMeta):
   
-  def __init__(self, logger,broker):
-    self.logger = logger
+  def __init__(self, broker):
     self.broker = broker
+    self.logger = broker.logger
 
   def load_templates(self,plan_id):
     # Load all templates in repo
