@@ -47,11 +47,11 @@ else:
   username = DEFAULT_USERNAME
   password = DEFAULT_PWD
 
-#openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(template_folder=template_folder,
-#                                                       logger=logger), 
-#                                  api.BrokerCredentials(username,password), logger)
+openbroker_bp = api.get_blueprint(MongoDBEnterpriseOSB(template_folder=template_folder,
+                                                       logger=logger), 
+                                  api.BrokerCredentials(username,password), logger)
 
-#app.register_blueprint(openbroker_bp)
+app.register_blueprint(openbroker_bp)
 
 import pprint
 pprint.pprint(app)
