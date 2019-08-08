@@ -19,8 +19,11 @@ DEFAULT_USERNAME="test"
 DEFAULT_PWD="test"
 
 template_folder = os.environ.get('MDB_OSB_TEMPLATE_DIR','/mdb-osb-templates')
+mdb_osb_config_path = "/"
 app = Flask(__name__,template_folder=template_folder)
 
+BROKER_PORT = os.getenv('MDB_OSB_PORT',80)
+print(f'BROKER_PORT={BROKER_PORT}')
 
 @app.route("/signup")
 def signup():
@@ -36,10 +39,9 @@ def hello():
 if os.environ.get('KUBERNETES_SERVICE_HOST'):
   k8s_host = os.environ.get('KUBERNETES_SERVICE_HOST')
   logger.debug(f'Running in a Kubernetes cluster. KUBERNETES_SERVICE_HOST={k8s_host}')
-  config_path = "/broker/broker-config"
-  with open( ("%s/username" % config_path), 'r') as secret:
+  with open( ("/mdb-osb/credentials/username"), 'r') as secret:
     username = secret.read()
-  with open( ("%s/password" % config_path), 'r') as secret:
+  with open( ("/mdb-osb/credentials/password" % MDB_OSB_CONFIG_PATH), 'r') as secret:
     password = secret.read()
 else:
   logger.debug("Did not detect Kubernetes cluster")
@@ -58,4 +60,4 @@ pprint.pprint(app)
 if __name__ == "__main__":
     # Only for debugging while developing
     app.template_folder = '../templates'
-    app.run(host="0.0.0.0", debug=True, port=8080)
+    app.run(host="0.0.0.0", debug=True, port=BROKER_PORT)

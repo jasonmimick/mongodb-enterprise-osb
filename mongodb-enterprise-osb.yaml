@@ -1,0 +1,100 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mongodb-enterprise-osb  
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mongodb-enterprise-osb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: mongodb-enterprise-osb
+    namespace: default 
+  - kind: ServiceAccount
+    name: mongodb-enterprise-osb
+    namespace: mongodb
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "mongodb-enterprise-osb-configuration"
+data:
+  broker.yaml: |-
+    testing: 123
+    foobar: "I can't drive 55."
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "mongodb-enterprise-osb-credentials"
+stringData:
+  username: "admin"
+  password: "secret123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongodb-enterprise-osb
+  name: mongodb-enterprise-osb
+spec:
+  ports:
+  - port: 80 
+    protocol: TCP
+    targetPort: 80
+    name: http 
+  selector:
+    app: mongodb-enterprise-osb 
+  type: LoadBalancer
+---
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ClusterServiceBroker
+metadata:
+  name: mongodb-enterprise-osb
+spec:
+  authInfo:
+    basic:
+      secretRef:
+        name: mongodb-enterprise-osb-credentials
+        namespace: mongodb
+  url: http://mongodb-enterprise-osb.mongodb.svc.cluster.local:5000 
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: "mongodb-enterprise-osb"
+spec:
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: "mongodb-enterprise-osb"
+    spec:
+      serviceAccountName: "mongodb-enterprise-osb"
+      containers:
+      - name: "mongodb-enterprise-osb"
+        image: "jmimick/mongodb-enterprise-osb"
+        imagePullPolicy: "Always"
+        ports:
+        - name: http
+          containerPort: 80 
+        volumeMounts:
+          - mountPath: /mdb-osb/configuration
+            name: mongodb-entperise-osb-configuration
+            readOnly: true
+          - mountPath: /mdb-osb/credentials
+            name: mongodb-entperise-osb-credentials
+            readOnly: true
+      volumes:
+      - name: mongodb-enterprise-osb-configuration
+        configMap:
+          name: mongodb-enterprise-osb-configuration
+      - name: mongodb-enterprise-osb-credentials
+        secret:
+          secretName: mongodb-enterprise-osb-credentials
