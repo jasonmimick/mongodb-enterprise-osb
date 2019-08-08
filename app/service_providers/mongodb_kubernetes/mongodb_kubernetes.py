@@ -30,58 +30,11 @@ class MongoDBKubernetesServiceProvider(MDBOSBServiceProvider):
     super().__init__(broker)
     self.my_services = {}
     self.provider_id = "mongodb-kubernetes"
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    self.mdb_template_folder = os.path.join(current_dir,'templates')
+    self.current_dir = os.path.dirname(os.path.abspath(__file__))
+    self.mdb_template_folder = os.path.join(self.current_dir,'templates')
     self.site_template_folder = os.path.join(broker.template_folder,'mongodb-kubernetes')
 
-  def plans(self) -> List[ServicePlan]:
-    plans=[
-      ServicePlan(
-          id='standard-mongodb-replset',
-          name='standard-mongodb-replset',
-          description='Standard MongoDB replica set. Allows configuration.',
-      )
-    ]
-    # TODO
-    # Load all plans defined from 
-    # 1) ./templates
-    # 2) /mdb-osb-templates/mongodb-kubernetes
-    #lt = os.path.join( os.path.abspath(__file__), 'templates')
 
-    lt = os.path.join( os.path.dirname(__file__), 'templates')
-    self.logger.debug(f'lt={lt}')
-    dirlist = os.listdir(lt)
-    self.logger.debug(f'dirlist={dirlist}')
-    templates = list(filter(lambda x: os.path.isdir(os.path.join(lt, x)), dirlist))
-    self.logger.debug(f'local_templates: {templates}')
-    self.logger.info(f'local_templates: {templates}')
-    #TODO - re add site template! deal with empty!
-    #templates.append( list(filter(os.path.isdir, self.broker.template_folder)) )
-    self.logger.info(f'local+site >>templates: {templates}')
-    for template in templates:
-      self.logger.debug(f'>>>>> template={template}')
-      # Name of folder in template folder is id, get last
-      # part of path
-      template_id = os.path.split(template)[-1] 
-      
-      self.logger.info(f'template_id={template_id}')
-      template_yaml_filename = os.path.join(lt, template, f'{template}.yaml')
-      self.logger.debug(f'attempting to load {template_yaml_filename}')      
-      self.logger.debug('attempting to load {template_yaml_filename}')
-      with open(template_yaml_filename, 'r') as stream:
-        template_yaml = yaml.safe_load(stream)
-        self.logger.debug(f'template_yaml={template_yaml}')
-        if 'description' in template_yaml['metadata']:
-          desc = template_yaml['metadata']['description']
-        else:
-          desc = f'mdb-ent-osb loaded template from {template}' 
-        plan = ServicePlan(id=template_id,
-                           name=template_id,
-                           description=desc)
-        plans.append(plan)
-
-    self.myplans = plans[:]
-    return plans
                     
   def tags(self) -> List[str]:
     return [ "MongoDB Kubernetes Operator", "k8s", "containers", "docker" ] 

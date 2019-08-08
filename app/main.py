@@ -6,7 +6,7 @@ from broker import MongoDBEnterpriseOSB
 from flask import jsonify, render_template
 
 logger = logging.getLogger('mdb-osb')
-log_level=os.environ.get("MDB_OSB_LOGLEVEL", "INFO")
+log_level=os.environ.get("MDB_OSB_LOGLEVEL", "DEBUG")#"INFO")
 logger.setLevel(log_level)
 
 handler = logging.StreamHandler(sys.stdout)
