@@ -1,4 +1,4 @@
-This document holds design notes/etc for collaboration.
+This document hold design notes/etc for collaboration.
 
 mongodb-enterprise-osb implementation details
 
@@ -24,6 +24,9 @@ open service broker = common spec for cloud providers so that they can all talk 
 
 - OBS installer - 
 https://svc-cat.io/docs/catalog-restrictions/
+
+for EKS
+https://aws.amazon.com/blogs/opensource/kubernetes-service-catalog-aws-service-broker-on-eks/
 
 
 ```
@@ -65,5 +68,3 @@ https://svc-cat.io/docs/catalog-restrictions/
   ]
 }
 ```
-
-

@@ -23,7 +23,7 @@ subjects:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "mongodb-enterprise-osb-configuration"
+  name: mongodb-enterprise-osb-configuration
 data:
   broker.yaml: |-
     testing: 123
@@ -32,7 +32,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: "mongodb-enterprise-osb-credentials"
+  name: mongodb-enterprise-osb-credentials
 stringData:
   username: "admin"
   password: "secret123"
@@ -63,7 +63,7 @@ spec:
       secretRef:
         name: mongodb-enterprise-osb-credentials
         namespace: mongodb
-  url: http://mongodb-enterprise-osb.mongodb.svc.cluster.local:5000 
+  url: http://mongodb-enterprise-osb.mongodb.svc.cluster.local 
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -86,15 +86,15 @@ spec:
           containerPort: 80 
         volumeMounts:
           - mountPath: /mdb-osb/configuration
-            name: mongodb-entperise-osb-configuration
+            name: osb-configuration
             readOnly: true
           - mountPath: /mdb-osb/credentials
-            name: mongodb-entperise-osb-credentials
+            name: osb-credentials
             readOnly: true
       volumes:
-      - name: mongodb-enterprise-osb-configuration
-        configMap:
-          name: mongodb-enterprise-osb-configuration
-      - name: mongodb-enterprise-osb-credentials
-        secret:
-          secretName: mongodb-enterprise-osb-credentials
+        - name: osb-configuration
+          configMap:
+            name: mongodb-enterprise-osb-configuration
+        - name: osb-credentials
+          secret:
+            secretName: mongodb-enterprise-osb-credentials

@@ -6,6 +6,7 @@ from broker import MongoDBEnterpriseOSB
 from flask import jsonify, render_template
 
 logger = logging.getLogger('mdb-osb')
+#fofo
 log_level=os.environ.get("MDB_OSB_LOGLEVEL", "DEBUG")#"INFO")
 logger.setLevel(log_level)
 
@@ -39,9 +40,9 @@ def hello():
 if os.environ.get('KUBERNETES_SERVICE_HOST'):
   k8s_host = os.environ.get('KUBERNETES_SERVICE_HOST')
   logger.debug(f'Running in a Kubernetes cluster. KUBERNETES_SERVICE_HOST={k8s_host}')
-  with open( ("/mdb-osb/credentials/username"), 'r') as secret:
+  with open( "/mdb-osb/credentials/username", 'r') as secret:
     username = secret.read()
-  with open( ("/mdb-osb/credentials/password" % MDB_OSB_CONFIG_PATH), 'r') as secret:
+  with open( "/mdb-osb/credentials/password", 'r') as secret:
     password = secret.read()
 else:
   logger.debug("Did not detect Kubernetes cluster")
