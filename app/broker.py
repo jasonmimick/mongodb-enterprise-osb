@@ -106,7 +106,7 @@ class MongoDBEnterpriseOSB(ServiceBroker):
       catalog = Service(
             id='mongodb-open-service-broker',
             name='mongodb-open-service-broker-service',
-            description='The MongoDB Enterprise Open Service Broker. Install, provision, bind, and manager MongoDB Enterprise Private Cloud deployments with ease.',
+            description='The MongoDB Enterprise Open Service Broker. https://mongodb.com/osb',
             bindable=True,
             plans=plans,
             tags=list(set(tags)),
