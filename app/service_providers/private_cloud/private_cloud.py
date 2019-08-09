@@ -49,6 +49,7 @@ class PrivateCloudServiceProvider(MDBOSBServiceProvider):
           description='Installs the companion MongoDB Atlas Open Service Broker.',
       )
     ]
+    self.logger.debug(f'private cloud {plans}')
     self.myplans = plans[:]
     return plans
                     

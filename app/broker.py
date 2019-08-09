@@ -37,6 +37,7 @@ import os
 from service_providers import service_provider
 from service_providers.private_cloud import private_cloud
 from service_providers.mongodb_kubernetes import mongodb_kubernetes
+from service_providers.mongodb_enterprise_tools import mongodb_enterprise_tools
 
 
 from flask import jsonify
@@ -68,13 +69,21 @@ class MongoDBEnterpriseOSB(ServiceBroker):
       self.__last_op = {}
       self.__catalog = {}
 
+      # Private Cloud Provider
       pc = private_cloud.PrivateCloudServiceProvider(self)
       self.service_providers['private-cloud'] = pc
     
+      # Standard MongoDB Templates
       mk = mongodb_kubernetes.MongoDBKubernetesServiceProvider(self)
       self.service_providers['mongodb-kubernetes'] = mk
 
+      # Enterprise Tools
+      ets = mongodb_enterprise_tools.MongoDBEnterpriseToolsServiceProvider(self)
+      self.service_providers['mongodb-enterprise-tools'] = ets
 
+      # Private Providers
+      # Here, we will load the customer/cluster specific private providers.
+  
     def catalog(self) -> Service:
       
       self.logger.debug("loaded service providers\n".join("{}\t{}".format(k, v) for k, v in self.service_providers.items()))
@@ -83,8 +92,10 @@ class MongoDBEnterpriseOSB(ServiceBroker):
       for provider_name in self.service_providers.keys():
         self.logger.debug("loading plans for provider: %s" % provider_name)
         provider = self.service_providers[provider_name]
+        self.logger.debug(f'{provider}')
         provider_plans = provider.plans()
         for plan in provider_plans:
+          self.logger.debug(f'plan={plan}')
           self.service_plans[plan.id]= { 'provider_name' : provider_name, 'plans' : provider_plans }
         plans.extend( provider_plans )
         tags.extend( provider.tags() )

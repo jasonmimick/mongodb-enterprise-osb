@@ -17,6 +17,7 @@ from openbrokerapi.service_broker import (
     UnbindDetails,
     UpdateDetails,
     ServiceBroker)
+import yaml
 
 from openbrokerapi.catalog import (
     ServicePlan,
@@ -31,17 +32,20 @@ class MDBOSBServiceProvider(object, metaclass=abc.ABCMeta):
     self.broker = broker
     self.logger = broker.logger
     self.__plan_ids = self.plan_ids()
+    self.myplans = self.__load_plans() 
 
   def plan_ids(self):
     caller = sys._getframe(2).f_globals['__file__'].split('.')[0]
     self.logger.debug(f'caller={caller}')
     callers_path = os.path.dirname(caller)
     self.logger.debug(f'callers_path={callers_path}')
+    self.current_dir = callers_path
     templates_dir = os.path.join(callers_path,'templates')
     self.logger.debug(f'templates_dir={templates_dir}')
     plans_dir = os.environ.get('MDB_OSB_TEMPLATE',templates_dir)
     self.logger.info(f'plan_dirs={plans_dir}')
     plan_ids = os.listdir(plans_dir)
+    self.plans_dir = plans_dir
     self.logger.info(f'plan_ids={plan_ids}')
     return plan_ids
 
@@ -100,27 +104,32 @@ class MDBOSBServiceProvider(object, metaclass=abc.ABCMeta):
 
 
   def plans(self) -> List[ServicePlan]:
-    return self.plans
+    self.logger.debug(f'plans - service provider {self.myplans}')
+    return self.myplans
 
   def __load_plans(self) -> List[ServicePlan]:
-    def plan_from_plan_file(plan_id, plan_file):
-      if not os.path.exists(plan_file):
-        self.logger.warn('No "plan.yaml" found in {self.current_path}, unable to load additional plan information. This may be just fine, maybe this plan does not need one. Consider adding an empty .plan.yaml.ignore file in the repoted path to suppress this warning.') 
-      plan_info = yaml.load(plan_file)
+    plans = []
+      #if not os.path.exists(plan_file):
+        #self.logger.warn(f'No "plan.yaml" found in {self.plans_dir}, unable to load additional plan information. This may be just fine, maybe this plan does not need one. Consider adding an empty .plan.yaml.ignore file in the repoted path to suppress this warning.') 
+      #  self.logger.warn(f'No "plan.yaml" found in {self.plans_dir}.') 
+      #plan_info = yaml.load(plan_file)
 
-    plan_ids = self.plan_ids()
+    plan_ids = self.__plan_ids
     for plan_id in plan_ids:
-      plan_file = os.path.combine( self.current_path, 'plan.yaml' )
-      ignore_plan_file = os.path.combine( self.current_path, '.plan.yaml.ignore')
-      if not os.path.exists( ignore_plan_file ):
-        plan = plan_from_plan_file(plan_id,plan_file) 
-      else:
-        plan = ServicePlan( id=plan_id,
-                            name=plan_id,
-                            description=f'Default description for plan {plan_id}' )
+      this_plan_dir = os.path.join(self.plans_dir, plan_id )
+      #plan_file = os.path.join( this_plan_dir, 'plan.yaml' )
+      #ignore_plan_file = os.path.join( self.plans_dir, '.plan.yaml.ignore')
+      #if not os.path.exists( ignore_plan_file ):
+      #  plan = plan_from_plan_file(plan_file) 
+      #else:
+      desc = f'Plan id:{plan_id} plan_dir:{this_plan_dir}'
+      plan = ServicePlan( id=plan_id,
+                          name=plan_id,
+                          description=desc)
       #
       plans.append( plan )
-    self.plans = plans
+    self.logger.debug(f'__load_plans {plans}')
+    return plans
 
   @abc.abstractmethod
   def tags(self) -> List[str]:
